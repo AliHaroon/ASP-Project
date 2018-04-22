@@ -10,6 +10,6 @@ namespace ASP_Project.Models
     {
        [Key] public int AdminID { get; set; }
         public string Username { get; set; }
-
+        public virtual ApplicationUser AppUser { get; set; }
     }
 }

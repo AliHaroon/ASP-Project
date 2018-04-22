@@ -1,15 +1,15 @@
 ﻿using ASP_Project.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ASP_Project.Data
 {
-    public class SchoolContext : DbContext
+    public class SchoolContext : IdentityDbContext<ApplicationUser>
     {
         public SchoolContext(DbContextOptions<SchoolContext> options) : base(options)
         {
         }
 
-        public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Admin> Admin { get; set; }
         public DbSet<Teacher> Teacher { get; set; }
         public DbSet<Course> Course { get; set; }

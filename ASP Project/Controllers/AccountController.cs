@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
+﻿using ASP_Project.AccountViewModels;
 using ASP_Project.Models;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ASP_Project.Controllers
 {
@@ -25,66 +22,49 @@ namespace ASP_Project.Controllers
             _signInManager = signInManager;
             _logger = logger;
         }
+
         public IActionResult Index()
         {
             return View();
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult Login(string returnUrL)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            return View(new LoginViewModel()
+            {
+                ReturnUrl = returnUrL
+            });
         }
 
         [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Type = model.Type };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                return View(loginViewModel);
+            }
+
+            var user = await _userManager.FindByNameAsync(loginViewModel.Username);
+            if (user != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
-
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
+                    if (string.IsNullOrEmpty(loginViewModel.ReturnUrl))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    return Redirect(loginViewModel.ReturnUrl);
                 }
-                AddErrors(result);
             }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            ModelState.AddModelError("", "Username or Password are wrong");
+            return View(loginViewModel);
         }
 
-        #region Helpers
-
-        private void AddErrors(IdentityResult result)
+        public ActionResult Register()
         {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
-        }
-
-        #endregion
+            return View();
+        } 
     }
 }
