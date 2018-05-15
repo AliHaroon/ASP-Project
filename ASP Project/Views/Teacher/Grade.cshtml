@@ -1,0 +1,43 @@
+﻿@model ASP_Project.ViewModels.TeacherGradingModel
+@{
+	ViewData["Title"] = "Grade";
+}
+
+<h2>Grade</h2>
+
+<select asp-for="CourseID" id="course">
+	<option value="" disabled selected>Select a Course</option>
+	@foreach (var item in Model.Courses)
+	{
+		<option value="@item.CodeID">@item.Name</option>
+	}
+</select>
+
+<select asp-for="StudentID" id="student" hidden>
+	
+</select>
+
+@section Scripts{
+	<script type="text/javascript">
+		$(document).on('change', "select#course", function(){
+			var course = (this.value);
+			$.ajax({
+				url: "GetStudents?id=" + course,
+				type: "POST",
+				
+				success: function () {
+					$("#student").show();
+					
+				},
+				error: function (ex) {
+					alert(ex.getAllResponseHeaders);
+
+				}
+
+			});
+
+		
+		return false;
+	})
+	</script>
+}

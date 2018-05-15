@@ -1,0 +1,43 @@
+﻿@model IEnumerable<ASP_Project.Models.Course>
+@{
+    ViewData["Title"] = "ListCourses";
+}
+
+<h2>ListCourses</h2>
+<div>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>
+					CodeID
+				</th>
+				<th>
+					Name
+				</th>
+				<th>
+					Number Of Credits
+				</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@item.CodeID
+					</td>
+					<td>
+						@item.Name
+					</td>
+					<td>
+						@item.NumOfCredits
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+<div>
+	<a asp-action="Index">Back to Main Menu</a>
+</div>

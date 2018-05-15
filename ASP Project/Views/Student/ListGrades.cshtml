@@ -1,0 +1,57 @@
+﻿@model ASP_Project.Models.Student
+@{
+	ViewData["Title"] = "ListGrades";
+}
+
+<h2>ListGrades</h2>
+
+<div>
+	Name: @Model.FirstName @Model.MiddleName @Model.LastName
+</div>
+<div>
+	StudentID: @Model.StudentID
+</div>
+<div>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>
+					CourseID
+				</th>
+				<th>
+					CourseName
+				</th>
+				<th>
+					Number Of Credits
+				</th>
+				<th>
+					Grade
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				@foreach (var item in Model.Enrollments)
+				{
+
+					<td>
+						@item.Course.CodeID
+					</td>
+					<td>
+						@item.Course.Name
+					</td>
+					<td>
+						@item.Course.NumOfCredits
+					</td>
+					<td>
+						@item.Grade
+					</td>
+
+				}
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div>
+	<a asp-action="Index">Back to Main Menu</a>
+</div>

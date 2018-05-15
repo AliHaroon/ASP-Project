@@ -1,0 +1,18 @@
+﻿
+<script>
+	$(document).ready(function () {
+		$("#course").change(function () {
+			var course = $(this).val;
+
+			$.ajax({
+				url: '@Url.Action("Grade", "Teacher", new { CodeID = "@CodeID" })',
+				type: "POST",
+
+
+
+			})
+		})
+
+	})
+
+</script>

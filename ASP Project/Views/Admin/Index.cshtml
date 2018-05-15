@@ -1,0 +1,17 @@
+﻿@{
+	ViewData["Title"] = "Admin Page";
+}
+@model ASP_Project.ViewModels.AdminViewModel
+
+<h2>
+	Welcome Mr.
+	@Html.DisplayFor(model => model.FirstName)
+	@Html.DisplayFor(model => model.MiddleName)
+	@Html.DisplayFor(model => model.LastName)
+</h2>
+
+<a asp-controller="Account" asp-action="Register">Register a new User</a><br />
+<a asp-controller="Student" asp-action="Students">Check the List of Students</a><br />
+<a asp-controller="Teacher" asp-action="Teachers">Check the List of Teachers</a><br />
+<a asp-controller="Admin" asp-action="Courses">Check the list of Courses</a><br>
+<a asp-controller="Admin" asp-action="Manage">Add a new Course</a><br>
