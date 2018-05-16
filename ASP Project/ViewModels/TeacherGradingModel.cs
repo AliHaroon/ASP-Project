@@ -11,7 +11,7 @@ namespace ASP_Project.ViewModels
 		public IEnumerable<Course> Courses { get; set; }
 		public string CourseID { get; set; }
 		public IEnumerable<Student> Students { get; set; }
-		public string StudentID { get; set; }
+		public int StudentID { get; set; }
 		public float Grade { get; set; }
 
     }

@@ -225,6 +225,7 @@ namespace ASP_Project.Controllers
 			}
 			return View(course);
 		}
+
 		private bool CourseExists(string Code)
 		{
 			return _schoolcontext.Course.Any(e => e.CodeID == Code);
@@ -237,27 +238,45 @@ namespace ASP_Project.Controllers
 			var teacher = _teacherRepository.GetTeacherByUser(user);
 			await _schoolcontext.Entry(teacher).Collection(t => t.Courses).LoadAsync();
 
-			return View(new TeacherGradingModel() {
-			Courses = teacher.Courses
-
+			return View(new TeacherGradingModel()
+			{
+				Courses = teacher.Courses
 			});
 		}
 
-		public Student GetStudents(string id)
+		public async Task<string> GetStudents(string id)
 		{
 			List<Student> students = new List<Student>();
 			var enrollments = _schoolcontext.Enrollments;
+			string result = "";
 			foreach (var item in enrollments)
 			{
-				_schoolcontext.Entry(item).Reference(e => e.Course).Load();
-				_schoolcontext.Entry(item).Reference(e => e.Student).Load();
+				await _schoolcontext.Entry(item).Reference(e => e.Course).LoadAsync();
+				await _schoolcontext.Entry(item).Reference(e => e.Student).LoadAsync();
+
 				if (item.Course.CodeID == id)
 				{
-					students.Add(item.Student);
+					result += "<option value='" + item.Student.StudentID + "'>" + item.Student.FirstName + "</option>";
 				}
 			}
-			return students;
+			return result;
 		}
 
+		public async Task<IActionResult> SetGrades(TeacherGradingModel teacherGradingModel)
+		{
+			var enrollments = _schoolcontext.Enrollments;
+			foreach (var item in enrollments)
+			{
+				await _schoolcontext.Entry(item).Reference(e => e.Student).LoadAsync();
+				if (item.Student.StudentID == teacherGradingModel.StudentID)
+				{
+					item.Grade = teacherGradingModel.Grade;
+					_schoolcontext.Enrollments.Update(item);
+					break;
+				}
+			}
+			await _schoolcontext.SaveChangesAsync();
+			return RedirectToAction("Index", "Teacher");
+		}
 	}
 }

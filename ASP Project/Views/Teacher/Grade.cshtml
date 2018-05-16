@@ -4,40 +4,36 @@
 }
 
 <h2>Grade</h2>
+<form asp-action="SetGrades">
+	<select asp-for="CourseID" id="course">
+		<option value="" disabled selected>Select a Course</option>
+		@foreach (var item in Model.Courses)
+		{
+			<option value="@item.CodeID">@item.Name</option>
+		}
+	</select>
 
-<select asp-for="CourseID" id="course">
-	<option value="" disabled selected>Select a Course</option>
-	@foreach (var item in Model.Courses)
-	{
-		<option value="@item.CodeID">@item.Name</option>
-	}
-</select>
-
-<select asp-for="StudentID" id="student" hidden>
-	
-</select>
-
-@section Scripts{
-	<script type="text/javascript">
+	<select asp-for="StudentID" id="student" hidden></select>
+	<br />
+	<input type="number" id="grade" asp-for="Grade" hidden /><br />
+	<input type="submit" value="Save" class="btn btn-default" id="submit" hidden />
+</form>
+	@section Scripts{
+		<script type="text/javascript">
 		$(document).on('change', "select#course", function(){
 			var course = (this.value);
-			$.ajax({
-				url: "GetStudents?id=" + course,
-				type: "POST",
-				
-				success: function () {
+			$.post(
+				"@Url.Action("GetStudents", "Teacher")",
+				{ id: course },
+				function (result) {
 					$("#student").show();
-					
-				},
-				error: function (ex) {
-					alert(ex.getAllResponseHeaders);
-
+					$("#grade").show();
+					$("#submit").show();
+					$("#student").append(result);
 				}
+			)
 
-			});
-
-		
 		return false;
 	})
-	</script>
-}
+		</script>
+	}
