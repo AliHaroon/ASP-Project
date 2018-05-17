@@ -1,90 +1,127 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
+﻿using ASP_Project.AccountViewModels;
 using ASP_Project.Models;
+using ASP_Project.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ASP_Project.Controllers
 {
-    public class AccountController : Controller
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger _logger;
+	public class AccountController : Controller
+	{
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly SignInManager<ApplicationUser> _signInManager;
+		private readonly IAdminRepository _adminRepository;
+		private readonly IStudentRepository _studentRepository;
+		private readonly ITeacherRepository _teacherRepository;
+		private readonly ILogger _logger;
 
-        public AccountController(
-                    UserManager<ApplicationUser> userManager,
-                    SignInManager<ApplicationUser> signInManager,
-                    ILogger<AccountController> logger)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
-        }
-        public IActionResult Index()
-        {
-            return View();
-        }
+		public AccountController(
+					UserManager<ApplicationUser> userManager,
+					SignInManager<ApplicationUser> signInManager,
+					IAdminRepository adminRepository,
+					ITeacherRepository teacherRepository,
+					IStudentRepository studentRepository,
+					ILogger<AccountController> logger)
+		{
+			_adminRepository = adminRepository;
+			_userManager = userManager;
+			_signInManager = signInManager;
+			_teacherRepository = teacherRepository;
+			_studentRepository = studentRepository;
+			_logger = logger;
+		}
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
+		public IActionResult Index()
+		{
+			return View();
+		}
+		
+		public IActionResult Login(string returnUrL)
+		{
+			return View(new LoginViewModel()
+			{
+				ReturnUrl = returnUrL
+			});
+		}
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = model.UserName, Type = model.Type };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
+		[HttpPost]
+		public async Task<IActionResult> Login(LoginViewModel loginViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View(loginViewModel);
+			}
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created a new account with password.");
-                    return RedirectToLocal(returnUrl);
-                }
-                AddErrors(result);
-            }
+			var user = await _userManager.FindByNameAsync(loginViewModel.Username);
+			if (user != null)
+			{
+				var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
+				if (result.Succeeded)
+				{
+					if (string.IsNullOrEmpty(loginViewModel.ReturnUrl))
+					{
+						if (await _userManager.IsInRoleAsync(user, "Admin"))
+							return RedirectToAction("Index", "Admin");
+						if (await _userManager.IsInRoleAsync(user, "Teacher"))
+							return RedirectToAction("Index", "Teacher");
+						if (await _userManager.IsInRoleAsync(user, "Student"))
+							return RedirectToAction("Index", "Student");
+					}
+					return View();
+				}
+			}
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
+			ModelState.AddModelError("", "Username or Password are wrong");
+			return View(loginViewModel);
+		}
 
-        #region Helpers
+		[HttpGet]
+		[Authorize(Roles = "Admin")]
+		public ActionResult Register()
+		{
+			return View();
+		}
 
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }
+		[HttpPost]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
+		{
+			if (ModelState.IsValid)
+			{
+				if (registerViewModel.Role.Equals("Admin"))
+					await _adminRepository.CreateAdminAsync(registerViewModel.UserName,
+						registerViewModel.Password,
+						registerViewModel.FirstName,
+						registerViewModel.MiddleName,
+						registerViewModel.LastName
+						);
+				else if (registerViewModel.Role.Equals("Teacher"))
+					await _teacherRepository.CreateTeacherAsync(registerViewModel.UserName,
+						registerViewModel.Password,
+						registerViewModel.FirstName,
+						registerViewModel.MiddleName,
+						registerViewModel.LastName
+						);
+				else
+					await _studentRepository.CreateStudentAsync(registerViewModel.UserName,
+						registerViewModel.Password,
+						registerViewModel.FirstName,
+						registerViewModel.MiddleName,
+						registerViewModel.LastName
+						);
+				return RedirectToAction("Index", "Home");
+			}
 
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
-        }
+			return View(registerViewModel);
+		}
 
-        #endregion
-    }
+		public async Task<IActionResult> Logout(string returnUrL)
+		{
+			await _signInManager.SignOutAsync();
+			return RedirectToAction("Login");
+		}
+	}
 }

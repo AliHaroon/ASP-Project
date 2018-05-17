@@ -1,0 +1,22 @@
+﻿@model ASP_Project.ViewModels.StudentCourseViewModel
+@{
+	ViewData["Title"] = "Drop";
+}
+
+<h2>Drop</h2>
+
+<div class="row">
+	<div class="col-md-4">
+		<form method="post" role="form">
+			<label asp-for="CourseID"></label>
+			<select asp-for="CourseID">
+				<option value="" disabled selected>Select Course</option>
+				@foreach (var item in Model.Enrollment)
+				{
+					<option value="@item">@item</option>
+				}
+			</select>
+			<button type="submit" class="btn btn-default">Drop</button>
+		</form>
+	</div>
+</div>

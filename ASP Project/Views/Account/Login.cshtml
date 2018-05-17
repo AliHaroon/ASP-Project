@@ -1,0 +1,47 @@
+﻿@model ASP_Project.AccountViewModels.LoginViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+	ViewData["Title"] = "Login";
+}
+<center>
+	<div class="card w-50 mx-auto text-center">
+		<form asp-route="@ViewData["ReturnUrl"]" class="" method="post">
+			<div class="card-header h4 font-weight-light">
+				Sign in
+			</div>
+			<div class="card-body">
+				<div class="form-group row">
+					<label asp-for="Username" class="col-form-label col-2"></label>
+					<div class="input-group mb-2 col-9">
+						<div class="input-group-prepend">
+							<div class="input-group-text">@@</div>
+						</div>
+						<input asp-for="Username" class="form-control input-lg" placeholder="Username" />
+					</div>
+					<span asp-validation-for="Username" class="text-danger"></span>
+				</div>
+				<div class="form-group row">
+					<label asp-for="Password" class="col-form-label col-2"></label>
+					<div class="input-group mb-2 col-9">
+						<div class="input-group-prepend">
+							<div class="input-group-text">*</div>
+						</div>
+						<input asp-for="Password" class="form-control input-lg" placeholder="Password" />
+					</div>
+					<span asp-validation-for="Password" class="text-danger"></span>
+				</div>
+				<button type="submit" class="btn btn-primary btn-lg btn-simple">Login</button>
+			</div>
+			@if (!SignInManager.IsSignedIn(User))
+			{
+				<div class="card-subtitle">
+					Don't have an account?
+					<a asp-controller="Home" asp-action="Contact" class="btn btn-link btn-lg">Contact the Admin</a>
+				</div>
+			}
+		</form>
+	</div>
+</center>
+@section Scripts {
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -1,494 +1,268 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ASP_Project.AccountViewModels;
-using ASP_Project.Data;
+﻿using ASP_Project.Data;
 using ASP_Project.Models;
-using ASP_Project.Services;
+using ASP_Project.Services.Interfaces;
+using ASP_Project.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ASP_Project.Controllers
 {
-    public class StudentController : Controller
-    {
-        private readonly SchoolContext _context;
-        private readonly UserManager<Student> _userManager;
-        private readonly SignInManager<Student> _signInManager;
-        private readonly IEmailSender _emailSender;
-        private readonly ISmsSender _smsSender;
-        private readonly ILogger _logger;
-        private readonly string _externalCookieScheme;
+	public class StudentController : Controller
+	{
+		private readonly IStudentRepository _studentRepository;
+		private readonly SchoolContext _schoolContext;
+		private readonly IAdminRepository _adminRepository;
+		private readonly UserManager<ApplicationUser> _userManager;
 
-        public StudentController(
-            UserManager<Student> userManager,
-            SignInManager<Student> signInManager,
-            IOptions<IdentityCookieOptions> identityCookieOptions,
-            IEmailSender emailSender,
-            ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
-            _emailSender = emailSender;
-            _smsSender = smsSender;
-            _logger = loggerFactory.CreateLogger<StudentController>();
-        }
+		public StudentController(IStudentRepository studentRepository,
+			SchoolContext schoolContext,
+			UserManager<ApplicationUser> userManager,
+			IAdminRepository adminRepository
+			)
+		{
+			_studentRepository = studentRepository;
+			_schoolContext = schoolContext;
+			_userManager = userManager;
+			_adminRepository = adminRepository;
+		}
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-        private bool StudentExists(int id)
-        {
-            return _context.Students.Any(e => e.StudentID == id);
-        }
-        public StudentController(SchoolContext context)
-        {
-            _context = context;
-        }
-        //
-        // GET: /Account/Login
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl = null)
-        {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
+		public IActionResult Index()
+		{
+			return View();
+		}
 
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
+		public IActionResult Students(StudentViewModel studentViewModel)
+		{
+			IEnumerable<Student> students = _studentRepository.Students();
+			return View(students);
+		}
 
-        //
-        // POST: /Account/Login
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
-            {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.student, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation(1, "User logged in.");
-                    return RedirectToLocal(returnUrl);
-                }
-                //if (result.RequiresTwoFactor)
-                //{
-                //    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                //}
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning(2, "User account locked out.");
-                    return View("Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View(model);
-                }
-            }
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
+			var student = await _schoolContext.Students.SingleOrDefaultAsync(m => m.StudentID == id);
+			if (student == null)
+			{
+				return NotFound();
+			}
+			return View(student);
+		}
 
-        //
-        // GET: /Account/Register
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult Register(string returnUrl = null)
-        //{
-        //    ViewData["ReturnUrl"] = returnUrl;
-        //    return View();
-        //}
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("StudentID,FirstName,MiddleName,LastName,Username")] Student student)
+		{
+			if (id != student.StudentID)
+			{
+				return NotFound();
+			}
 
-        ////
-        //// POST: /Account/Register
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
-        //{
-        //    ViewData["ReturnUrl"] = returnUrl;
-        //    if (ModelState.IsValid)
-        //    {
-        //        var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-        //        var result = await _userManager.CreateAsync(user, model.Password);
-        //        if (result.Succeeded)
-        //        {
-        //            // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-        //            // Send an email with this link
-        //            //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-        //            //var callbackUrl = Url.Action(nameof(ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-        //            //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-        //            //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-        //            await _signInManager.SignInAsync(user, isPersistent: false);
-        //            _logger.LogInformation(3, "User created a new account with password.");
-        //            return RedirectToLocal(returnUrl);
-        //        }
-        //        AddErrors(result);
-        //    }
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					_schoolContext.Update(student);
+					await _userManager.UpdateAsync(student.ApplicationUser);
+					await _schoolContext.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!StudentExists(student.StudentID))
+					{
+						return NotFound();
+					}
+					else
+					{
+						throw;
+					}
+				}
+				return RedirectToAction(nameof(Students));
+			}
+			return View(student);
+		}
 
-        //    // If we got this far, something failed, redisplay form
-        //    return View(model);
-        //}
+		public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        ////
-        //// POST: /Account/Logout
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Logout()
-        //{
-        //    await _signInManager.SignOutAsync();
-        //    _logger.LogInformation(4, "User logged out.");
-        //    return RedirectToAction(nameof(HomeController.Index), "Home");
-        //}
+			var student = await _schoolContext.Students
+				.AsNoTracking()
+				.SingleOrDefaultAsync(m => m.StudentID == id);
+			if (student == null)
+			{
+				return NotFound();
+			}
 
-        ////
-        //// POST: /Account/ExternalLogin
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult ExternalLogin(string provider, string returnUrl = null)
-        //{
-        //    // Request a redirect to the external login provider.
-        //    var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { ReturnUrl = returnUrl });
-        //    var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-        //    return Challenge(properties, provider);
-        //}
+			if (saveChangesError.GetValueOrDefault())
+			{
+				ViewData["ErrorMessage"] =
+					"Delete failed. Try again, and if the problem persists " +
+					"see your system administrator.";
+			}
 
-        ////
-        //// GET: /Account/ExternalLoginCallback
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
-        //{
-        //    if (remoteError != null)
-        //    {
-        //        ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
-        //        return View(nameof(Login));
-        //    }
-        //    var info = await _signInManager.GetExternalLoginInfoAsync();
-        //    if (info == null)
-        //    {
-        //        return RedirectToAction(nameof(Login));
-        //    }
+			return View(student);
+		}
 
-        //    // Sign in the user with this external login provider if the user already has a login.
-        //    var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-        //    if (result.Succeeded)
-        //    {
-        //        _logger.LogInformation(5, "User logged in with {Name} provider.", info.LoginProvider);
-        //        return RedirectToLocal(returnUrl);
-        //    }
-        //    if (result.RequiresTwoFactor)
-        //    {
-        //        return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl });
-        //    }
-        //    if (result.IsLockedOut)
-        //    {
-        //        return View("Lockout");
-        //    }
-        //    else
-        //    {
-        //        // If the user does not have an account, then ask the user to create an account.
-        //        ViewData["ReturnUrl"] = returnUrl;
-        //        ViewData["LoginProvider"] = info.LoginProvider;
-        //        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        //        return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = email });
-        //    }
-        //}
+		// POST: Students/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var student = await _schoolContext.Students.SingleOrDefaultAsync(m => m.StudentID == id);
+			await _userManager.DeleteAsync(student.ApplicationUser);
+			_schoolContext.Students.Remove(student);
+			await _schoolContext.SaveChangesAsync();
+			return RedirectToAction(nameof(Students));
+		}
 
-        ////
-        //// POST: /Account/ExternalLoginConfirmation
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Get the information about the user from the external login provider
-        //        var info = await _signInManager.GetExternalLoginInfoAsync();
-        //        if (info == null)
-        //        {
-        //            return View("ExternalLoginFailure");
-        //        }
-        //        var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-        //        var result = await _userManager.CreateAsync(user);
-        //        if (result.Succeeded)
-        //        {
-        //            result = await _userManager.AddLoginAsync(user, info);
-        //            if (result.Succeeded)
-        //            {
-        //                await _signInManager.SignInAsync(user, isPersistent: false);
-        //                _logger.LogInformation(6, "User created an account using {Name} provider.", info.LoginProvider);
-        //                return RedirectToLocal(returnUrl);
-        //            }
-        //        }
-        //        AddErrors(result);
-        //    }
+		private bool StudentExists(int id)
+		{
+			return _schoolContext.Students.Any(e => e.StudentID == id);
+		}
 
-        //    ViewData["ReturnUrl"] = returnUrl;
-        //    return View(model);
-        //}
+		[HttpGet]
+		public IActionResult RegisterCourse()
+		{
+			var courses = _adminRepository.Courses();
+			return View(new StudentRegisterViewModel()
+			{
+				Courses = courses
+			});
+		}
 
-        //// GET: /Account/ConfirmEmail
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        //{
-        //    if (userId == null || code == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var user = await _userManager.FindByIdAsync(userId);
-        //    if (user == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var result = await _userManager.ConfirmEmailAsync(user, code);
-        //    return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        //}
+		[HttpPost]
+		public async Task<IActionResult> RegisterCourse(StudentRegisterViewModel srvm)
+		{
+			var courses = _adminRepository.Courses();
+			if (ModelState.IsValid)
+			{
+				ClaimsPrincipal currentUser = User;
+				var user = await _userManager.GetUserAsync(currentUser);
+				var student = _studentRepository.GetStudentByUser(user);
+				var course = _schoolContext.Course.SingleOrDefault(c => c.CodeID == srvm.CourseID);
+				var check = _schoolContext.Enrollments.Where(e => e.StudentID == student.StudentID).Any(e => e.CourseID == srvm.CourseID);
+				if (check)
+				{
+					ModelState.AddModelError("", "You can't register the same Course more than once");
+					return View(new StudentRegisterViewModel()
+					{
+						Courses = courses
+					});
+				}
+				var enrollment = new Enrollment()
+				{
+					CourseID = course.CodeID,
+					StudentID = student.StudentID
+				};
+				int NewCredits = student.CreditsTaken + course.NumOfCredits;
+				if (NewCredits > 30)
+				{
+					ModelState.AddModelError("", "You can't register to more than 30 credits worth of courses");
+					return View(new StudentRegisterViewModel()
+					{
+						Courses = courses
+					});
+				}
+				else
+				{
+					student.CreditsTaken = NewCredits;
+				}
+				_schoolContext.Students.Update(student);
+				_schoolContext.Enrollments.Add(enrollment);
+				if (_schoolContext.SaveChanges() == 0)
+				{
+					ModelState.AddModelError("", "Something went wrong while updating database, please try again later");
+					return View(new StudentRegisterViewModel()
+					{
+						Courses = courses
+					});
+				}
+			}
+			else
+			{
+				ModelState.AddModelError("", "Something went wrong while updating database, please try again later");
+				return View(new StudentRegisterViewModel()
+				{
+					Courses = courses
+				});
+			}
 
-        ////
-        //// GET: /Account/ForgotPassword
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult ForgotPassword()
-        //{
-        //    return View();
-        //}
+			return View(new StudentRegisterViewModel()
+			{
+				Courses = courses
+			});
+		}
 
-        ////
-        //// POST: /Account/ForgotPassword
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var user = await _userManager.FindByEmailAsync(model.Email);
-        //        if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-        //        {
-        //            // Don't reveal that the user does not exist or is not confirmed
-        //            return View("ForgotPasswordConfirmation");
-        //        }
+		[HttpGet]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Drop()
+		{
+			ClaimsPrincipal currentUser = User;
+			var user = await _userManager.GetUserAsync(currentUser);
+			var student = _studentRepository.GetStudentByUser(user);
+			var enroll = _schoolContext.Enrollments.Where(e => e.StudentID == student.StudentID).Select(e => e.CourseID);
+			return View(new StudentCourseViewModel()
+			{
+				Enrollment = enroll
+			});
+		}
 
-        //        // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-        //        // Send an email with this link
-        //        //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-        //        //var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-        //        //await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-        //        //   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-        //        //return View("ForgotPasswordConfirmation");
-        //    }
+		[HttpPost]
+		[Authorize(Roles = "Student")]
+		public IActionResult Drop(StudentCourseViewModel scvm)
+		{
+			var enrollment = _schoolContext.Enrollments.SingleOrDefault(e => e.CourseID == scvm.CourseID);
+			_schoolContext.Enrollments.Remove(enrollment);
+			_schoolContext.SaveChanges();
+			return RedirectToAction("Index", "Student");
+		}
 
-        //    // If we got this far, something failed, redisplay form
-        //    return View(model);
-        //}
+		[HttpGet]
+		[Authorize(Roles = "Student")]
+		public async Task<IActionResult> ListCourses()
+		{
+			ClaimsPrincipal currentUser = User;
+			var user = await _userManager.GetUserAsync(currentUser);
+			var student = _studentRepository.GetStudentByUser(user);
+			await _schoolContext.Entry(student).Collection(x => x.Enrollments).LoadAsync();
+			List<Course> courses = new List<Course>();
+			foreach (Enrollment enrollment in student.Enrollments)
+			{
+				await _schoolContext.Entry(enrollment).Reference(e => e.Course).LoadAsync();
+				courses.Add(enrollment.Course);
+			}
 
-        ////
-        //// GET: /Account/ForgotPasswordConfirmation
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult ForgotPasswordConfirmation()
-        //{
-        //    return View();
-        //}
+			return View(courses);
+		}
 
-        ////
-        //// GET: /Account/ResetPassword
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult ResetPassword(string code = null)
-        //{
-        //    return code == null ? View("Error") : View();
-        //}
+		[Authorize(Roles = "Student")]
+		public async Task<IActionResult> ListGrades()
+		{
+			ClaimsPrincipal currentUser = User;
+			var user = await _userManager.GetUserAsync(currentUser);
+			var student = _studentRepository.GetStudentByUser(user);
+			await _schoolContext.Entry(student).Collection(x => x.Enrollments).LoadAsync();
+			foreach (Enrollment enrollment in student.Enrollments)
+			{
+				await _schoolContext.Entry(enrollment).Reference(e => e.Course).LoadAsync();
+			}
+			return View(student);
+		}
 
-        ////
-        //// POST: /Account/ResetPassword
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
-        //    var user = await _userManager.FindByEmailAsync(model.Email);
-        //    if (user == null)
-        //    {
-        //        // Don't reveal that the user does not exist
-        //        return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
-        //    }
-        //    var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-        //    if (result.Succeeded)
-        //    {
-        //        return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
-        //    }
-        //    AddErrors(result);
-        //    return View();
-        //}
+		
 
-        ////
-        //// GET: /Account/ResetPasswordConfirmation
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult ResetPasswordConfirmation()
-        //{
-        //    return View();
-        //}
-
-        ////
-        //// GET: /Account/SendCode
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<ActionResult> SendCode(string returnUrl = null, bool rememberMe = false)
-        //{
-        //    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-        //    if (user == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(user);
-        //    var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-        //    return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        //}
-
-        ////
-        //// POST: /Account/SendCode
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> SendCode(SendCodeViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View();
-        //    }
-
-        //    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-        //    if (user == null)
-        //    {
-        //        return View("Error");
-        //    }
-
-        //    // Generate the token and send it
-        //    var code = await _userManager.GenerateTwoFactorTokenAsync(user, model.SelectedProvider);
-        //    if (string.IsNullOrWhiteSpace(code))
-        //    {
-        //        return View("Error");
-        //    }
-
-        //    var message = "Your security code is: " + code;
-        //    if (model.SelectedProvider == "Email")
-        //    {
-        //        await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "Security Code", message);
-        //    }
-        //    else if (model.SelectedProvider == "Phone")
-        //    {
-        //        await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
-        //    }
-
-        //    return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
-        //}
-
-        ////
-        //// GET: /Account/VerifyCode
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> VerifyCode(string provider, bool rememberMe, string returnUrl = null)
-        //{
-        //    // Require that the user has already logged in via username/password or external login
-        //    var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-        //    if (user == null)
-        //    {
-        //        return View("Error");
-        //    }
-        //    return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
-        //}
-
-        ////
-        //// POST: /Account/VerifyCode
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> VerifyCode(VerifyCodeViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(model);
-        //    }
-
-        //    // The following code protects for brute force attacks against the two factor codes.
-        //    // If a user enters incorrect codes for a specified amount of time then the user account
-        //    // will be locked out for a specified amount of time.
-        //    var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
-        //    if (result.Succeeded)
-        //    {
-        //        return RedirectToLocal(model.ReturnUrl);
-        //    }
-        //    if (result.IsLockedOut)
-        //    {
-        //        _logger.LogWarning(7, "User account locked out.");
-        //        return View("Lockout");
-        //    }
-        //    else
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Invalid code.");
-        //        return View(model);
-        //    }
-        //}
-
-        ////
-        //// GET /Account/AccessDenied
-        //[HttpGet]
-        //public IActionResult AccessDenied()
-        //{
-        //    return View();
-        //}
-
-        #region Helpers
-
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
-        }
-
-        #endregion
-
-    }
-    // GET: /<controller>/
-    
+	}
 }
