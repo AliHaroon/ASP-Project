@@ -49,6 +49,7 @@ namespace ASP_Project.Controllers
 		}
 
 		[HttpGet]
+		[Authorize(Roles = "Admin")]
 		public IActionResult Manage()
 		{
 			IEnumerable<string> teachers = _teacherRepository.TeacherNames();
@@ -59,6 +60,7 @@ namespace ASP_Project.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Manage(CourseViewModel courseViewModel)
 		{
 			IEnumerable<string> teachers = _teacherRepository.TeacherNames();
@@ -88,12 +90,14 @@ namespace ASP_Project.Controllers
 			});
 		}
 
+		[Authorize(Roles = "Admin")]
 		public IActionResult Courses(CourseViewModel courseViewModel)
 		{
 			IEnumerable<Course> courses = _adminRepos.Courses();
 			return View(courses);
 		}
 
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> EditCourse(string Code)
 		{
 			if (Code == null)
@@ -110,6 +114,7 @@ namespace ASP_Project.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> EditCourse(string Code, [Bind("CodeID", "NumOfCredits", "Name", "TeacherID")] Course course)
 		{
 			if (Code != course.CodeID)

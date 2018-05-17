@@ -38,7 +38,7 @@ namespace ASP_Project.Controllers
 		{
 			return View();
 		}
-
+		
 		public IActionResult Login(string returnUrL)
 		{
 			return View(new LoginViewModel()
@@ -86,7 +86,7 @@ namespace ASP_Project.Controllers
 		}
 
 		[HttpPost]
-		//[Authorize(Roles = "Admin")]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
 		{
 			if (ModelState.IsValid)

@@ -2,6 +2,7 @@
 using ASP_Project.Models;
 using ASP_Project.Services.Interfaces;
 using ASP_Project.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -206,6 +207,7 @@ namespace ASP_Project.Controllers
 		}
 
 		[HttpGet]
+		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Drop()
 		{
 			ClaimsPrincipal currentUser = User;
@@ -219,6 +221,7 @@ namespace ASP_Project.Controllers
 		}
 
 		[HttpPost]
+		[Authorize(Roles = "Student")]
 		public IActionResult Drop(StudentCourseViewModel scvm)
 		{
 			var enrollment = _schoolContext.Enrollments.SingleOrDefault(e => e.CourseID == scvm.CourseID);
@@ -228,6 +231,7 @@ namespace ASP_Project.Controllers
 		}
 
 		[HttpGet]
+		[Authorize(Roles = "Student")]
 		public async Task<IActionResult> ListCourses()
 		{
 			ClaimsPrincipal currentUser = User;
@@ -244,6 +248,7 @@ namespace ASP_Project.Controllers
 			return View(courses);
 		}
 
+		[Authorize(Roles = "Student")]
 		public async Task<IActionResult> ListGrades()
 		{
 			ClaimsPrincipal currentUser = User;

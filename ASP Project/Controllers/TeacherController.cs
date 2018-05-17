@@ -2,6 +2,7 @@
 using ASP_Project.Models;
 using ASP_Project.Services.Interfaces;
 using ASP_Project.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,17 +35,20 @@ namespace ASP_Project.Controllers
 		}
 
 		// GET: /<controller>/
+		[Authorize(Roles = "Admin")]
 		public IActionResult Teachers()
 		{
 			IEnumerable<Teacher> teachers = _teacherRepository.Teachers();
 			return View(teachers);
 		}
 
+		[Authorize(Roles = "Teacher")]
 		public IActionResult Index()
 		{
 			return View();
 		}
 
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> Edit(int? id)
 		{
 			if (id == null)
@@ -62,6 +66,7 @@ namespace ASP_Project.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> Edit(int id, [Bind("TeacherID,FirstName,MiddleName,LastName,Username")] Teacher teacher)
 		{
 			if (id != teacher.TeacherID)
@@ -93,6 +98,7 @@ namespace ASP_Project.Controllers
 			return View(teacher);
 		}
 
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
 		{
 			if (id == null)
@@ -121,6 +127,7 @@ namespace ASP_Project.Controllers
 		// POST: Students/Delete/5
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
 			var teacher = await _schoolcontext.Teacher.SingleOrDefaultAsync(m => m.TeacherID == id);
@@ -135,6 +142,7 @@ namespace ASP_Project.Controllers
 			return _schoolcontext.Teacher.Any(e => e.TeacherID == teacherID);
 		}
 
+		[Authorize(Roles = "Teacher")]
 		public IActionResult Manage()
 		{
 			IEnumerable<string> teachers = _teacherRepository.TeacherNames();
@@ -144,6 +152,7 @@ namespace ASP_Project.Controllers
 			});
 		}
 
+		[Authorize(Roles = "Teacher")]
 		[HttpPost]
 		public async Task<IActionResult> Manage(CourseViewModel courseViewModel)
 		{
@@ -174,12 +183,14 @@ namespace ASP_Project.Controllers
 			});
 		}
 
+		[Authorize(Roles = "Teacher")]
 		public IActionResult Courses(CourseViewModel courseViewModel)
 		{
 			IEnumerable<Course> courses = _adminRepository.Courses();
 			return View(courses);
 		}
 
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> EditCourse(string Code)
 		{
 			if (Code == null)
@@ -196,6 +207,7 @@ namespace ASP_Project.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> EditCourse(string Code, [Bind("CodeID", "NumOfCredits", "Name", "TeacherID")] Course course)
 		{
 			if (Code != course.CodeID)
@@ -231,6 +243,7 @@ namespace ASP_Project.Controllers
 			return _schoolcontext.Course.Any(e => e.CodeID == Code);
 		}
 
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> Grade()
 		{
 			ClaimsPrincipal currentUser = User;
