@@ -16,25 +16,30 @@
 	</div>
 	<div class="wrap">
 		<div class="main">
-			<nav class="navbar navbar-expand-lg navbar-dark bg-dark text-center" >
-				<p class="navbar-brand">ASP Project</p>
-				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" style="">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-
-				<div class="collapse navbar-collapse" id="navbarColor02">
-					<ul class="navbar-nav mr-auto">
-						<li class="nav-item">
-							<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">About</a>
-						</li>
-						@await Html.PartialAsync("_LoginPartial")
-					</ul>
+			<nav class="navbar navbar-expand-lg bg-default">
+				<div class="container">
+					<div class="navbar-translate">
+						<p class="navbar-brand font-weight-bold text-white">ASP.Net Project</p>
+						<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-bar bar1"></span>
+							<span class="navbar-toggler-bar bar2"></span>
+							<span class="navbar-toggler-bar bar3"></span>
+						</button>
+					</div>
+					<div class="collapse navbar-collapse justify-content-end" id="navigation">
+						<ul class="navbar-nav">
+							<li class="nav-item">
+								<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">About</a>
+							</li>
+							@await Html.PartialAsync("_LoginPartial")
+						</ul>
+					</div>
 				</div>
 			</nav>
 		</div>
