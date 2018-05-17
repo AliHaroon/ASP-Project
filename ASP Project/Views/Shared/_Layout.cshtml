@@ -2,10 +2,13 @@
 <html>
 <head>
 	<title>@ViewData["Title"] - ASP_Project</title>
-	<link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-	<script src="~/lib/jquery/dist/jquery.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+	<link href="~/now-ui-kit-v1.1.0/assets/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="~/now-ui-kit-v1.1.0/assets/css/demo.css" rel="stylesheet" />
 	<link href="~/now-ui-kit-v1.1.0/assets/css/now-ui-kit.css" rel="stylesheet" />
+	<script src="~/now-ui-kit-v1.1.0/assets/js/core/jquery.3.2.1.min.js"></script>
+	<script src="~/now-ui-kit-v1.1.0/assets/js/core/popper.min.js"></script>
+	<script src="~/now-ui-kit-v1.1.0/assets/js/core/bootstrap.min.js"></script>
+	<script src="~/now-ui-kit-v1.1.0/assets/js/now-ui-kit.js"></script>
 </head>
 <body>
 	<div class="jumbotron text-center" style="margin-bottom:0">
@@ -39,7 +42,7 @@
 		<footer>
 		</footer>
 	</div>
-
+	<!--
 	<environment include="Development">
 		<script src="~/lib/jquery/dist/jquery.js"></script>
 		<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
@@ -68,6 +71,7 @@
 		<script src="~/lib/js/jquery-3.3.1.min.js"></script>
 		<script src="~/lib/js/bootstrap.bundle.min.js"></script>
 	</environment>
+	-->
 	@RenderSection("Scripts", required: false)
 </body>
 </html>
