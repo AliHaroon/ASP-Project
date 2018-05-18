@@ -2,36 +2,33 @@
 @{
 	ViewData["Title"] = "Manage";
 }
-
-<h2>Manage</h2>
-
-<div class="row">
-	<div class="col-md-4">
+<center>
+	<div class="card w-75 mx-auto text-center" style="margin: 20px;">
 		<form asp-controller="Teacher" asp-action="Manage" method="post" class="form-horizontal" role="form">
-			<h4>Create a new Course.</h4>
-			<hr />
-			<div asp-validation-summary="All" class="text-danger"></div>
-			<div class="form-group">
-				<label asp-for="CodeID"></label>
-				<input asp-for="CodeID" class="form-control" />
-				<span asp-validation-for="CodeID" class="text-danger"></span>
+			<div class="card-header h4 font-weight-light">
+				Add a course
 			</div>
-			<div class="form-group">
-				<label asp-for="Name"></label>
-				<input asp-for="Name" class="form-control" />
-				<span asp-validation-for="Name" class="text-danger"></span>
+			<div class="card-body form-group">
+				<div class="form-group row">
+					<label asp-for="CodeID" class="col-form-label col-2"></label>
+					<input asp-for="CodeID" class="form-control col-9" />
+					<span asp-validation-for="CodeID" class="text-danger"></span>
+				</div>
+				<div class="form-group row">
+					<label asp-for="Name" class="col-form-label col-2"></label>
+					<input asp-for="Name" class="form-control col-9" />
+					<span asp-validation-for="Name" class="text-danger"></span>
+				</div>
+				<div class="form-group row">
+					<label asp-for="NumOfCredits" class="col-form-label col-2"></label>
+					<input asp-for="NumOfCredits" class="form-control col-9" />
+					<span asp-validation-for="NumOfCredits" class="text-danger"></span>
+				</div>
+				<button type="submit" class="btn btn-default">Add</button>
 			</div>
-			<div class="form-group">
-				<label asp-for="NumOfCredits"></label>
-				<input asp-for="NumOfCredits" class="form-control" />
-				<span asp-validation-for="NumOfCredits" class="text-danger"></span>
-			</div>
-			<input type="hidden" asp-for="TeacherId" value="@Model.TeacherId">
-
-			<button type="submit" class="btn btn-default">Add</button>
 		</form>
 	</div>
-</div>
-@section Scripts {
-	@await Html.PartialAsync("_ValidationScriptsPartial")
-}
+	@section Scripts {
+		@await Html.PartialAsync("_ValidationScriptsPartial")
+	}
+</center>

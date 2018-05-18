@@ -32,7 +32,7 @@
 						@Html.DisplayFor(modelItem => item.NumOfCredits) credit(s)
 					</td>
 					<td width="10">
-						<a asp-controller="Admin" asp-action="EditCourse" asp-route-Code="@item.CodeID">EditCourse</a>
+						<a asp-controller="Admin" asp-action="EditCourse" class="btn btn-link" asp-route-Code="@item.CodeID">EditCourse</a>
 					</td>
 				</tr>
 			}
