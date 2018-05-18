@@ -1,18 +1,17 @@
-﻿
-<script>
-	$(document).ready(function () {
-		$("#course").change(function () {
-			var course = $(this).val;
+﻿<script type="text/javascript">
+		$(document).on('change', "select#course", function(){
+			var course = (this.value);
+			$.post(
+				"@Url.Action("GetStudents", "Teacher")",
+				{ id: course },
+				function (result) {
+					$("#student").show();
+					$("#grade").show();
+					$("#submit").show();
+					$("#student").append(result);
+				}
+			)
 
-			$.ajax({
-				url: '@Url.Action("Grade", "Teacher", new { CodeID = "@CodeID" })',
-				type: "POST",
-
-
-
-			})
-		})
-
+		return false;
 	})
-
 </script>

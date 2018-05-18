@@ -1,43 +1,41 @@
 ﻿@model IEnumerable<ASP_Project.Models.Course>
 @{
-    ViewData["Title"] = "ListCourses";
+	ViewData["Title"] = "ListCourses";
 }
-
-<h2>ListCourses</h2>
-<div>
-	<table class="table">
-		<thead>
+<div class="container bg-white fixed-section" style="padding: 20px; overflow-x: hidden; overflow-y:auto; margin-bottom: 0 0;">
+	<h2 class="header h2 text-center">Courses</h2>
+	<table class="table bg-white table-hover table-striped">
+		<thead class="bg-danger text-white">
 			<tr>
-				<th>
-					CodeID
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.CodeID)
 				</th>
-				<th>
-					Name
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.Name)
 				</th>
-				<th>
-					Number Of Credits
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.NumOfCredits)
 				</th>
-
 			</tr>
 		</thead>
-		<tbody>
+		<tbody class="bg-light">
 			@foreach (var item in Model)
 			{
 				<tr>
-					<td>
-						@item.CodeID
+					<td scope="row">
+						@Html.DisplayFor(modelItem => item.CodeID)
 					</td>
 					<td>
-						@item.Name
+						@Html.DisplayFor(modelItem => item.Name)
 					</td>
 					<td>
-						@item.NumOfCredits
+						@Html.DisplayFor(modelItem => item.NumOfCredits) credit(s)
 					</td>
 				</tr>
 			}
 		</tbody>
 	</table>
-</div>
-<div>
-	<a asp-action="Index">Back to Main Menu</a>
+	<div>
+		<a class="btn btn-lg btn-link btn-primary btn-outline-warning" asp-action="Index">Back to Main Menu</a>
+	</div>
 </div>

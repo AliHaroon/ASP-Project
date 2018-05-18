@@ -1,17 +1,26 @@
 ﻿@{
 	ViewData["Title"] = "Admin Page";
 }
-@model ASP_Project.ViewModels.AdminViewModel
+@model ASP_Project.ViewModels.AdminViewModel;
 
-<h2>
-	Welcome Mr.
-	@Html.DisplayFor(model => model.FirstName)
-	@Html.DisplayFor(model => model.MiddleName)
-	@Html.DisplayFor(model => model.LastName)
-</h2>
-
-<a asp-controller="Account" asp-action="Register">Register a new User</a><br />
-<a asp-controller="Student" asp-action="Students">Check the List of Students</a><br />
-<a asp-controller="Teacher" asp-action="Teachers">Check the List of Teachers</a><br />
-<a asp-controller="Admin" asp-action="Courses">Check the list of Courses</a><br>
-<a asp-controller="Admin" asp-action="Manage">Add a new Course</a><br>
+<center>
+	<div class="card w-50 bg-light text-center" style="vertical-align: central; margin-top: 10em">
+		<h2 class="card-header">
+			Welcome,
+			@Html.DisplayFor(model => model.FirstName)
+			@Html.DisplayFor(model => model.MiddleName)
+			@Html.DisplayFor(model => model.LastName)
+		</h2>
+		<div class="card-body container">
+			<div class="">
+				<a class="btn btn-lg btn-primary" asp-controller="Account" asp-action="Register">Register a new User</a>
+				<a class="btn btn-lg btn-primary" asp-controller="Admin" asp-action="Manage">Add a new Course</a>
+			</div>
+			<div class="">
+				<a class="btn btn-lg btn-primary" asp-controller="Teacher" asp-action="Teachers">Check the list of Teachers</a>
+				<a class="btn btn-lg btn-primary" asp-controller="Admin" asp-action="Courses">Check the list of Courses</a>
+			</div>
+			<a class="btn btn-lg btn-primary" asp-controller="Student" asp-action="Students">Check the list of Students</a>
+		</div>
+	</div>
+</center>

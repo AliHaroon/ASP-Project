@@ -2,39 +2,33 @@
 @{
 	ViewData["Title"] = "ListGrades";
 }
-
-<h2>ListGrades</h2>
-
-<div>
-	Name: @Model.FirstName @Model.MiddleName @Model.LastName
-</div>
-<div>
-	StudentID: @Model.StudentID
-</div>
-<div>
-	<table class="table">
-		<thead>
+<div class="container bg-white fixed-section" style="padding: 20px; overflow-x: hidden; overflow-y:auto; margin-bottom: 0 0;">
+	<h2 class="header h2 text-center">Grades</h2>
+	<div class="header h3 text-center">
+		<b>Name:</b> @Model.FirstName @Model.MiddleName @Model.LastName
+	</div>
+	<table class="table bg-white table-hover table-striped">
+		<thead class="bg-danger text-white">
 			<tr>
-				<th>
+				<th scope="col">
 					CourseID
 				</th>
-				<th>
+				<th scope="col">
 					CourseName
 				</th>
-				<th>
+				<th scope="col">
 					Number Of Credits
 				</th>
-				<th>
+				<th scope="col">
 					Grade
 				</th>
 			</tr>
 		</thead>
-		<tbody>
-			<tr>
-				@foreach (var item in Model.Enrollments)
-				{
-
-					<td>
+		<tbody class="bg-light">
+			@foreach (var item in Model.Enrollments)
+			{
+				<tr>
+					<td scope="row">
 						@item.Course.CodeID
 					</td>
 					<td>
@@ -46,12 +40,11 @@
 					<td>
 						@item.Grade
 					</td>
-
-				}
-			</tr>
+				</tr>
+			}
 		</tbody>
 	</table>
-</div>
-<div>
-	<a asp-action="Index">Back to Main Menu</a>
+	<div>
+		<a class="btn btn-lg btn-link btn-primary btn-outline-danger" asp-action="Index">Back to Main Menu</a>
+	</div>
 </div>

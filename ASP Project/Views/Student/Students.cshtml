@@ -2,57 +2,55 @@
 @{
 	ViewData["Title"] = "Students";
 }
-
-<h2>Students</h2>
-
-<table class="table">
-	<thead>
-		<tr>
-			<th>
-				@Html.DisplayNameFor(model => model.StudentID)
-			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.FirstName)
-			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.MiddleName)
-			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.LastName)
-			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.Username)
-			</th>
-			<th>
-				@Html.DisplayNameFor(model => model.CreditsTaken)
-			</th>
-			<th>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var item in Model)
-		{
+<div class="container bg-white fixed-section" style="padding: 20px; overflow-x: hidden; overflow-y:auto; margin-bottom: 0 0;">
+	<h2 class="header h2 text-center">Students</h2>
+	<table class="table bg-white table-hover table-striped">
+		<thead class="bg-primary text-white">
 			<tr>
-				<td>
-					@Html.DisplayFor(modelItem => item.StudentID)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.FirstName)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.MiddleName)
-				<td>
-					@Html.DisplayFor(modelItem => item.LastName)
-				</td>
-				<td>
-					@Html.DisplayFor(modelItem => item.Username)
-				</td>
-				<td>
-					<a asp-action="Edit" asp-route-id="@item.StudentID">Edit</a> |
-					<a asp-action="Delete" asp-route-id="@item.StudentID">Delete</a>
-				</td>
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.StudentID)
+				</th>
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.FirstName)
+				</th>
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.MiddleName)
+				</th>
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.LastName)
+				</th>
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.Username)
+				</th>
+				<th scope="col">
+					@Html.DisplayNameFor(model => model.CreditsTaken)
+				</th>
 			</tr>
-		}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td scope="row">
+						@Html.DisplayFor(modelItem => item.StudentID)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.FirstName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.MiddleName)
+					<td>
+						@Html.DisplayFor(modelItem => item.LastName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Username)
+					</td>
+					<td>
+						<a asp-action="Edit" asp-route-id="@item.StudentID">Edit</a> |
+						<a asp-action="Delete" asp-route-id="@item.StudentID">Delete</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

@@ -43,9 +43,18 @@ namespace ASP_Project.Controllers
 		}
 
 		[Authorize(Roles = "Teacher")]
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View();
+			ClaimsPrincipal currentUser = User;
+			var user = await _userManager.GetUserAsync(currentUser);
+			var teacher = _teacherRepository.GetTeacherByUser(user);
+
+			return View(new AdminViewModel()
+			{
+				FirstName = teacher.FirstName,
+				LastName = teacher.LastName,
+				MiddleName = teacher.MiddleName
+			});
 		}
 
 		[Authorize(Roles = "Teacher")]
@@ -143,12 +152,14 @@ namespace ASP_Project.Controllers
 		}
 
 		[Authorize(Roles = "Teacher")]
-		public IActionResult Manage()
+		public async Task<IActionResult> Manage()
 		{
-			IEnumerable<string> teachers = _teacherRepository.TeacherNames();
+			ClaimsPrincipal currentUser = User;
+			var user = await _userManager.GetUserAsync(currentUser);
+			var teacher = _teacherRepository.GetTeacherByUser(user);
 			return View(new CourseViewModel()
 			{
-				Teachers = teachers.ToList()
+				TeacherId = teacher.TeacherID
 			});
 		}
 
@@ -156,10 +167,9 @@ namespace ASP_Project.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Manage(CourseViewModel courseViewModel)
 		{
-			IEnumerable<string> teachers = _teacherRepository.TeacherNames();
 			if (ModelState.IsValid)
 			{
-				var teacher = _schoolcontext.Teacher.Single(t => t.FirstName == courseViewModel.TeacherName);
+				var teacher = _schoolcontext.Teacher.Single(t => t.TeacherID == courseViewModel.TeacherId);
 				Course course = new Course()
 				{
 					CodeID = courseViewModel.CodeID,
@@ -170,17 +180,11 @@ namespace ASP_Project.Controllers
 				await _schoolcontext.Course.AddAsync(course);
 				if (await _schoolcontext.SaveChangesAsync() == 0)
 				{
-					return View(new CourseViewModel()
-					{
-						Teachers = teachers.ToList()
-					});
+					return View();
 				}
-				return RedirectToAction("Index", "Teacher");
+				return RedirectToAction("Courses", "Teacher");
 			}
-			return View(new CourseViewModel()
-			{
-				Teachers = teachers.ToList()
-			});
+			return View();
 		}
 
 		[Authorize(Roles = "Teacher")]
@@ -243,6 +247,7 @@ namespace ASP_Project.Controllers
 			return _schoolcontext.Course.Any(e => e.CodeID == Code);
 		}
 
+		[HttpGet]
 		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> Grade()
 		{
@@ -257,24 +262,37 @@ namespace ASP_Project.Controllers
 			});
 		}
 
-		public async Task<string> GetStudents(string id)
+		[HttpPost]
+		public async Task<IActionResult> Grade(TeacherGradingModel teacherGradingModel)
 		{
-			List<Student> students = new List<Student>();
+			return View();
+		}
+
+		[HttpPost]
+		[Authorize(Roles = "Teacher")]
+		public async Task<IActionResult> GradeByCourse(TeacherGradingModel teacherGradingModel)
+		{
 			var enrollments = _schoolcontext.Enrollments;
-			string result = "";
+			List<Student> students = new List<Student>();
 			foreach (var item in enrollments)
 			{
 				await _schoolcontext.Entry(item).Reference(e => e.Course).LoadAsync();
-				await _schoolcontext.Entry(item).Reference(e => e.Student).LoadAsync();
-
-				if (item.Course.CodeID == id)
+				if (item.Course.CodeID == teacherGradingModel.CourseID)
 				{
-					result += "<option value='" + item.Student.StudentID + "'>" + item.Student.FirstName + "</option>";
+					await _schoolcontext.Entry(item).Reference(e => e.Student).LoadAsync();
+					students.Add(item.Student);
 				}
 			}
-			return result;
+			if (students.Count == 0)
+				return RedirectToAction("Grade", "Teacher");
+			return View(new TeacherGradingModel() {
+				Students = students,
+				CourseID = teacherGradingModel.CourseID
+			});
 		}
 
+		[HttpPost]
+		[Authorize(Roles = "Teacher")]
 		public async Task<IActionResult> SetGrades(TeacherGradingModel teacherGradingModel)
 		{
 			var enrollments = _schoolcontext.Enrollments;
@@ -292,4 +310,5 @@ namespace ASP_Project.Controllers
 			return RedirectToAction("Index", "Teacher");
 		}
 	}
+}
 }

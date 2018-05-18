@@ -27,16 +27,16 @@
 				<span asp-validation-for="NumOfCredits" class="text-danger"></span>
 			</div>
 			<div>
-				<label asp-for="TeacherName" class="col-md-2 control-label"></label>
+				<label asp-for="TeacherId" class="col-md-2 control-label"></label>
 				<div class="col-md-10">
-					<select asp-for="TeacherName" class="form-control" required>
+					<select asp-for="TeacherId" class="form-control" required>
 						<option value="" disabled selected>Select Teacher</option>
 						@foreach (var teach in Model.Teachers)
 						{
-							<option value="@teach"> @teach </option>
+							<option value="@teach.TeacherID"> @teach.FirstName, @teach.MiddleName, @teach.LastName </option>
 						}
 					</select>
-					<span asp-validation-for="TeacherName" class="text-danger"></span>
+					<span asp-validation-for="TeacherId" class="text-danger"></span>
 				</div>
 			</div>
 

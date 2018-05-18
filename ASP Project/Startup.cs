@@ -25,9 +25,16 @@ namespace ASP_Project
 		{
 			services.AddDbContext<SchoolContext>(options =>
 			   options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-			services.AddIdentity<ApplicationUser, IdentityRole>()
-		.AddEntityFrameworkStores<SchoolContext>()
-		.AddDefaultTokenProviders();
+			services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+			{
+				options.Password.RequireDigit = false;
+				options.Password.RequireLowercase = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequiredLength = 1;
+			})
+				.AddEntityFrameworkStores<SchoolContext>()
+				.AddDefaultTokenProviders();
 
 			services.AddTransient<IAdminRepository, AdminRepos>();
 			services.AddTransient<ITeacherRepository, TeacherRepo>();

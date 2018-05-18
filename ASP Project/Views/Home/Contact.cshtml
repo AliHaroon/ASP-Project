@@ -1,17 +1,97 @@
 ﻿@{
-    ViewData["Title"] = "Contact";
+	ViewData["Title"] = "Contact";
 }
-<h2>@ViewData["Title"]</h2>
-<h3>@ViewData["Message"]</h3>
+<div style="margin: 20px; padding: 10px;">
+	<div class="container w-75 bg-light" style="padding: 20px;">
+		<div class="row">
+			<div class="ml-auto mr-auto col-auto">
+				<div>
+					<h3 class="title">Give us a ring</h3>
+					<div class="d-flex justify-content-around">
+						<div class="p-2 card text-center" style="width: 40%;">
+							<div class="card-header bg-primary text-white h5">
+								Mahdi Jouni
+							</div>
+							<div class="card-text">
+								<span><i class="now-ui-icons tech_mobile"></i></span>
+								+961 76 595 930
+							</div>
+							<div class="card-text">
+								<span><i class="now-ui-icons ui-1_email-85"></i></span>
+								ceciladams85@gmail.com
+							</div>
+						</div>
+						<div class="p-2 card text-center"  style="width: 40%;">
+							<div class="card-header bg-primary text-white h5">
+								Ali Haroon
+							</div>
+							<div class="card-text">
+								<span><i class="now-ui-icons tech_mobile"></i></span>
+								+961 81 626 624
+							</div>
+							<div class="card-text">
+								<span><i class="now-ui-icons ui-1_email-85"></i></span>
+								aliharoon75@gmail.com
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div>
+					<h2 class="title">Send us a message</h2>
+					<p class="description">
+						You can contact us with anything related to our website. We'll get in touch with you as soon as possible.<br><br>
+					</p>
+					<form role="form" id="contact-form" method="post">
+						<label>Your name</label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="now-ui-icons users_circle-08"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="Your Name..." aria-label="Your Name...">
+						</div>
+						<label>Email address</label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="now-ui-icons ui-1_email-85"></i></span>
+							</div>
+							<input type="email" class="form-control" placeholder="Email Here..." aria-label="Email Here...">
+						</div>
+						<label>Phone</label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text"><i class="now-ui-icons tech_mobile"></i></span>
+							</div>
+							<input type="text" class="form-control" placeholder="Number Here...">
+						</div>
+						<div class="form-group">
+							<label>Your message</label>
+							<textarea name="message" class="form-control" id="message" rows="6"></textarea>
+						</div>
+						<div class="submit text-center">
+							<input type="submit" class="btn btn-primary btn-raised btn-round" value="Contact Us">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!--
+		<div class="container bg-white" style="margin: 20px">
+			<h2>@ViewData["Title"]</h2>
+			<h3>@ViewData["Message"]</h3>
 
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
+			<address>
+				One Microsoft Way<br />
+				Redmond, WA 98052-6399<br />
+				<abbr title="Phone">P:</abbr>
+				425.555.0100
+			</address>
 
-<address>
-    <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
+			<address>
+				<strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
+				<strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
+			</address>
+		</div>
+		-->
+	</div>
+</div>

@@ -32,9 +32,18 @@ namespace ASP_Project.Controllers
 			_adminRepository = adminRepository;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View();
+			ClaimsPrincipal currentUser = User;
+			var user = await _userManager.GetUserAsync(currentUser);
+			var student = _studentRepository.GetStudentByUser(user);
+
+			return View(new AdminViewModel()
+			{
+				FirstName = student.FirstName,
+				LastName = student.LastName,
+				MiddleName = student.MiddleName
+			});
 		}
 
 		public IActionResult Students(StudentViewModel studentViewModel)
@@ -207,7 +216,7 @@ namespace ASP_Project.Controllers
 		}
 
 		[HttpGet]
-		[Authorize(Roles = "Admin")]
+		[Authorize(Roles = "Student")]
 		public async Task<IActionResult> Drop()
 		{
 			ClaimsPrincipal currentUser = User;

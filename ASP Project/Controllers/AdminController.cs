@@ -52,10 +52,10 @@ namespace ASP_Project.Controllers
 		[Authorize(Roles = "Admin")]
 		public IActionResult Manage()
 		{
-			IEnumerable<string> teachers = _teacherRepository.TeacherNames();
+			var teachers = _schoolContext.Teacher;
 			return View(new CourseViewModel()
 			{
-				Teachers = teachers.ToList()
+				Teachers = teachers
 			});
 		}
 
@@ -63,10 +63,10 @@ namespace ASP_Project.Controllers
 		[Authorize(Roles = "Admin")]
 		public async Task<IActionResult> Manage(CourseViewModel courseViewModel)
 		{
-			IEnumerable<string> teachers = _teacherRepository.TeacherNames();
+			var teachers = _schoolContext.Teacher;
 			if (ModelState.IsValid)
 			{
-				var teacher = _schoolContext.Teacher.Single(t => t.FirstName == courseViewModel.TeacherName);
+				var teacher = _schoolContext.Teacher.Single(t => t.TeacherID == courseViewModel.TeacherId);
 				Course course = new Course()
 				{
 					CodeID = courseViewModel.CodeID,
@@ -79,14 +79,14 @@ namespace ASP_Project.Controllers
 				{
 					return View(new CourseViewModel()
 					{
-						Teachers = teachers.ToList()
+						Teachers = teachers
 					});
 				}
 				return RedirectToAction("Index", "Admin");
 			}
 			return View(new CourseViewModel()
 			{
-				Teachers = teachers.ToList()
+				Teachers = teachers
 			});
 		}
 

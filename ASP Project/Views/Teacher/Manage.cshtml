@@ -7,7 +7,7 @@
 
 <div class="row">
 	<div class="col-md-4">
-		<form asp-controller="Admin" asp-action="Manage" method="post" class="form-horizontal" role="form">
+		<form asp-controller="Teacher" asp-action="Manage" method="post" class="form-horizontal" role="form">
 			<h4>Create a new Course.</h4>
 			<hr />
 			<div asp-validation-summary="All" class="text-danger"></div>
@@ -26,19 +26,7 @@
 				<input asp-for="NumOfCredits" class="form-control" />
 				<span asp-validation-for="NumOfCredits" class="text-danger"></span>
 			</div>
-			<div>
-				<label asp-for="TeacherName" class="col-md-2 control-label"></label>
-				<div class="col-md-10">
-					<select asp-for="TeacherName" class="form-control" required>
-						<option value="" disabled selected>Select Teacher</option>
-						@foreach (var teach in Model.Teachers)
-						{
-							<option value="@teach"> @teach </option>
-						}
-					</select>
-					<span asp-validation-for="TeacherName" class="text-danger"></span>
-				</div>
-			</div>
+			<input type="hidden" asp-for="TeacherId" value="@Model.TeacherId">
 
 			<button type="submit" class="btn btn-default">Add</button>
 		</form>

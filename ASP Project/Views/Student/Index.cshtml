@@ -1,12 +1,26 @@
-﻿
+﻿@inject UserManager<ApplicationUser> UserManager
 @{
-	ViewData["Title"] = "Index";
+	ViewData["Title"] = $"Student {UserManager.GetUserName(User)}'s page";
 }
+@model ASP_Project.ViewModels.AdminViewModel;
 
-<h2>Index</h2>
-
-<a asp-controller="Student" asp-action="RegisterCourse">Enlist in a new Course</a>
-<a asp-controller="Student" asp-action="Drop">Drop a Course</a>
-<a asp-controller="Student" asp-action="ListCourses">List Registered Courses</a>
-<a asp-controller="Student" asp-action="ListGrades">Check Grades</a>
-
+<center>
+	<div class="card w-50 bg-light text-center" style="vertical-align: central; margin-top: 10em">
+		<h2 class="card-header">
+			Welcome,
+			@Html.DisplayFor(model => model.FirstName)
+			@Html.DisplayFor(model => model.MiddleName)
+			@Html.DisplayFor(model => model.LastName)
+		</h2>
+		<div class="card-body container">
+			<div class="">
+				<a class="btn btn-lg btn-primary" asp-controller="Student" asp-action="RegisterCourse">Enlist in a new Course</a>
+				<a class="btn btn-lg btn-primary" asp-controller="Student" asp-action="Drop">Drop a Course</a>
+			</div>
+			<div class="">
+				<a class="btn btn-lg btn-primary" asp-controller="Student" asp-action="ListCourses">List Registered Courses</a>
+				<a class="btn btn-lg btn-primary" asp-controller="Student" asp-action="ListGrades">Check Grades</a>
+			</div>
+		</div>
+	</div>
+</center>

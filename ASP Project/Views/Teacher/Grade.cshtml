@@ -2,38 +2,17 @@
 @{
 	ViewData["Title"] = "Grade";
 }
-
-<h2>Grade</h2>
-<form asp-action="SetGrades">
-	<select asp-for="CourseID" id="course">
-		<option value="" disabled selected>Select a Course</option>
-		@foreach (var item in Model.Courses)
-		{
-			<option value="@item.CodeID">@item.Name</option>
-		}
-	</select>
-
-	<select asp-for="StudentID" id="student" hidden></select>
-	<br />
-	<input type="number" id="grade" asp-for="Grade" hidden /><br />
-	<input type="submit" value="Save" class="btn btn-default" id="submit" hidden />
-</form>
-	@section Scripts{
-		<script type="text/javascript">
-		$(document).on('change', "select#course", function(){
-			var course = (this.value);
-			$.post(
-				"@Url.Action("GetStudents", "Teacher")",
-				{ id: course },
-				function (result) {
-					$("#student").show();
-					$("#grade").show();
-					$("#submit").show();
-					$("#student").append(result);
-				}
-			)
-
-		return false;
-	})
-		</script>
-	}
+<div>
+	<h2>Grade</h2>
+	<form asp-action="GradeByCourse" method="post">
+		<select asp-for="CourseID">
+			<option value="" disabled selected>Select a Course</option>
+			@foreach (var item in Model.Courses)
+			{
+				<option value="@item.CodeID">@item.Name</option>
+			}
+		</select>
+		<input type="submit" value="Select Course" class="btn btn-primary" />
+		<input type="hidden" value="@Model.CourseID" asp-for="CourseID" />
+	</form>
+</div>

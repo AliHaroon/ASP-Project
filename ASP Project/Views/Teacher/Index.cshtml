@@ -1,11 +1,25 @@
-﻿
+﻿@inject UserManager<ApplicationUser> UserManager
 @{
-	ViewData["Title"] = "Index";
+	ViewData["Title"] = $"Teacher {UserManager.GetUserName(User)}'s page";
 }
+@model ASP_Project.ViewModels.AdminViewModel;
 
-<h2>Index</h2>
-
-<a asp-controller="Teacher" asp-action="Courses">Check list of Courses</a><br />
-<a asp-controller="Teacher" asp-action="Manage">Create a new Course</a><br />
-<a asp-controller="Teacher" asp-action="Grade">Grade a Student</a><br />
-
+<center>
+	<div class="card w-50 bg-light text-center" style="vertical-align: central; margin-top: 10em">
+		<h2 class="card-header">
+			Welcome,
+			@Html.DisplayFor(model => model.FirstName)
+			@Html.DisplayFor(model => model.MiddleName)
+			@Html.DisplayFor(model => model.LastName)
+		</h2>
+		<div class="card-body container">
+			<div class="">
+				<a asp-controller="Teacher" class="btn btn-lg btn-primary" asp-action="Courses">Check list of Courses</a><br />
+				<a asp-controller="Teacher" class="btn btn-lg btn-primary" asp-action="Manage">Create a new Course</a><br />
+			</div>
+			<div class="">
+				<a asp-controller="Teacher" class="btn btn-lg btn-primary" asp-action="Grade">Grade a Student</a><br />
+			</div>
+		</div>
+	</div>
+</center>

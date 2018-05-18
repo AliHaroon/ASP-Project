@@ -1,0 +1,17 @@
+﻿@model ASP_Project.ViewModels.TeacherGradingModel
+@{
+	ViewData["Title"] = "GradeByCourse";
+}
+
+<h2>GradeByCourse</h2>
+<form method="post" asp-action="SetGrades"></form>
+<select asp-for="StudentID">
+	<option value="" disabled selected>Select a Student</option>
+	@foreach (var std in Model.Students)
+	{
+		<option value="@std.StudentID">@std.FirstName @std.MiddleName @std.LastName</option>
+	}
+</select>
+<br />
+<input type="number"  asp-for="Grade" /><br />
+<input type="submit" value="Save" class="btn btn-default" />

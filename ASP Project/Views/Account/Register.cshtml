@@ -2,59 +2,93 @@
 @{
 	ViewData["Title"] = "Register";
 }
+<center>
+	<div class="card w-75 text-center" style="margin-top: 20px;">
+		<form class="" method="post">
+			<div class="card-header h4 font-weight-light">
+				Register a new user
+			</div>
+			<div class="card-body form-group">
+				<div class="row">
+					<div class="form-group col col-7 row">
+						<label asp-for="UserName" class="col-form-label col-3"></label>
+						<div class="input-group input-lg col-9">
+							<span class="input-group-addon">
+								<i class="now-ui-icons users_circle-08"></i>
+							</span>
+							<input asp-for="UserName" class="form-control" placeholder="Username" />
+						</div>
+						<span asp-validation-for="UserName" class="text-danger"></span>
+					</div>
+					<div class="form-group col col-5 row">
+						<label asp-for="Role" class="col-form-label col-3"></label>
+						<select asp-for="Role" class="form-control col-4" onchange="showDiv(this)">
+							<option value="Admin">Admin</option>
+							<option value="Teacher">Teacher</option>
+							<option value="Student">Student</option>
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col col-6 row">
+						<label asp-for="Password" class="col-form-label col-3"></label>
+						<div class="input-group input-lg col-9">
+							<span class="input-group-addon">
+								<i class="now-ui-icons ui-1_lock-circle-open"></i>
+							</span>
+							<input asp-for="Password" class="form-control" placeholder="Password" />
+						</div>
+						<span asp-validation-for="Password" class="text-danger"></span>
+					</div>
 
-<h2>@ViewData["Title"]</h2>
-<div class="row">
-	<div class="">
-		<form  method="post">
-			<h4>Create a new account.</h4>
-			<hr />
-			<div asp-validation-summary="All" class="text-danger"></div>
-			<div class="form-group">
-				<label asp-for="Role"></label>
-				<select asp-for="Role" onchange="showDiv(this)">
-					<option value="Admin">Admin</option>
-					<option value="Teacher">Teacher</option>
-					<option value="Student">Student</option>
-				</select>
+					<div class="form-group col col-6 row">
+						<label asp-for="ConfirmPassword" class="col-form-label col-3"></label>
+						<div class="input-group input-lg col-9">
+							<span class="input-group-addon">
+								<i class="now-ui-icons ui-1_zoom-bold"></i>
+							</span>
+							<input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm your passowrd" />
+						</div>
+						<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col col-3 offset-1">
+						<label asp-for="FirstName" class="sr-only col-form-label"></label>
+						<div class="input-group input-lg">
+							<span class="input-group-addon">
+								<i class="now-ui-icons users_single-02"></i>
+							</span>
+							<input asp-for="FirstName" class="form-control" placeholder="First Name" />
+						</div>
+						<span asp-validation-for="FirstName" class="text-danger"></span>
+					</div>
+					<div class="form-group col col-3">
+						<label asp-for="MiddleName" class="sr-only col-form-label"></label>
+						<div class="input-group input-lg">
+							<span class="input-group-addon">
+								<i class="now-ui-icons users_single-02"></i>
+							</span>
+							<input asp-for="MiddleName" class="form-control" placeholder="Middle Name" />
+						</div>
+						<span asp-validation-for="MiddleName" class="text-danger"></span>
+					</div>
+					<div class="form-group col col-3">
+						<label asp-for="LastName" class="sr-only col-form-label"></label>
+						<div class="input-group input-lg">
+							<span class="input-group-addon">
+								<i class="now-ui-icons users_single-02"></i>
+							</span>
+							<input asp-for="LastName" class="form-control" placeholder="Last Name" />
+						</div>
+						<span asp-validation-for="LastName" class="text-danger"></span>
+					</div>
+				</div>
+				<button type="submit" class="btn btn-default">Register</button>
 			</div>
-			<div class="form-group">
-				<label asp-for="UserName"></label>
-				<input asp-for="UserName" class="form-control" />
-				<span asp-validation-for="UserName" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="Password"></label>
-				<input asp-for="Password" class="form-control" />
-				<span asp-validation-for="Password" class="text-danger"></span>
-			</div>
-
-			<div class="form-group">
-				<label asp-for="ConfirmPassword"></label>
-				<input asp-for="ConfirmPassword" class="form-control" />
-				<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-			</div>
-
-			<div class="form-group">
-				<label asp-for="FirstName"></label>
-				<input asp-for="FirstName" class="form-control" />
-				<span asp-validation-for="FirstName" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="MiddleName"></label>
-				<input asp-for="MiddleName" class="form-control" />
-				<span asp-validation-for="MiddleName" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="LastName"></label>
-				<input asp-for="LastName" class="form-control" />
-				<span asp-validation-for="LastName" class="text-danger"></span>
-			</div>
-
-			<button type="submit" class="btn btn-default">Register</button>
 		</form>
 	</div>
-</div>
-@section Scripts {
-	@await Html.PartialAsync("_ValidationScriptsPartial")
-}
+	@section Scripts {
+		@await Html.PartialAsync("_ValidationScriptsPartial")
+	}
+</center>
